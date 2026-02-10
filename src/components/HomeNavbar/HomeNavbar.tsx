@@ -1,0 +1,197 @@
+"use client";
+
+import Logo from "../Logo/Logo";
+import ThemeToggle from "../ThemeToggle/ThemeToggle";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  AiOutlineHome,
+  AiOutlineShop,
+  AiOutlineInfoCircle,
+  AiOutlineMail,
+} from "react-icons/ai";
+import { BsCupHot } from "react-icons/bs";
+import { FaTshirt } from "react-icons/fa";
+import { MdOutlinePhoneIphone } from "react-icons/md";
+
+export default function HomeNavbar() {
+  const pathname = usePathname();
+
+  const mainLinks = [
+    { name: "Home", link: "/", icon: AiOutlineHome },
+    { name: "About", link: "/about", icon: AiOutlineInfoCircle },
+    { name: "Contact", link: "/contact", icon: AiOutlineMail },
+  ];
+
+  const shopLinks = [
+    { name: "Custom Mugs", link: "/shop/mugs", icon: BsCupHot },
+    { name: "T-Shirts", link: "/shop/tshirts", icon: FaTshirt },
+    {
+      name: "Phone Cases",
+      link: "/shop/phone-cases",
+      icon: MdOutlinePhoneIphone,
+    },
+  ];
+
+  const isActive = (path: string) => pathname === path;
+
+  return (
+    <nav className="bg-secondary border-b border-[(--border-color)] shadow-sm sticky top-0 z-50">
+      <div className="navbar max-w-7xl mx-auto">
+        <div className="navbar-start">
+          {/* Mobile Menu Button */}
+          <div className="dropdown">
+            <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h8m-8 6h16"
+                />
+              </svg>
+            </div>
+
+            {/* Mobile Dropdown Menu */}
+            <ul className="menu menu-sm dropdown-content bg-base-100/80 rounded-box z-1 mt-3 w-52 p-2 shadow-lg border border-[(--border-color)]">
+              <li>
+                <Link
+                  href="/"
+                  className={`flex items-center gap-2 ${
+                    isActive("/")
+                      ? "active font-semibold"
+                      : "hover:text-primary"
+                  }`}
+                >
+                  <AiOutlineHome className="w-4 h-4" />
+                  Home
+                </Link>
+              </li>
+              <li>
+                <details>
+                  <summary className="flex items-center gap-2 hover:text-primary">
+                    <AiOutlineShop className="w-4 h-4" />
+                    Shop
+                  </summary>
+                  <ul className="p-2">
+                    {shopLinks.map((item) => {
+                      const Icon = item.icon;
+                      return (
+                        <li key={item.name}>
+                          <Link
+                            href={item.link}
+                            className={`flex items-center gap-2 ${
+                              isActive(item.link)
+                                ? "active font-semibold"
+                                : "hover:text-primary"
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                            {item.name}
+                          </Link>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </details>
+              </li>
+              {mainLinks.slice(1).map((link) => {
+                const Icon = link.icon;
+                return (
+                  <li key={link.name}>
+                    <Link
+                      href={link.link}
+                      className={`flex items-center gap-2 ${
+                        isActive(link.link)
+                          ? "active font-semibold"
+                          : "hover:text-primary"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {link.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <Logo />
+        </div>
+
+        {/* Desktop Menu */}
+        <div className="navbar-center hidden lg:flex">
+          <ul className="menu menu-horizontal px-1 gap-1">
+            <li>
+              <Link
+                href="/"
+                className={`flex items-center gap-2 ${
+                  isActive("/") ? "active font-semibold" : "hover:text-primary"
+                }`}
+              >
+                <AiOutlineHome className="w-5 h-5" />
+                Home
+              </Link>
+            </li>
+            <li>
+              <details>
+                <summary className="flex items-center gap-2 hover:text-primary">
+                  <AiOutlineShop className="w-5 h-5" />
+                  Shop
+                </summary>
+                <ul className="p-2 bg-base-100/90 w-52 z-1 shadow-lg hover:bg-base-100 hover:shadow-lg border border-[(--border-color)] rounded-box">
+                  {shopLinks.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <li key={item.name}>
+                        <Link
+                          href={item.link}
+                          className={`flex items-center gap-2 ${
+                            isActive(item.link)
+                              ? "active font-semibold"
+                              : "hover:text-primary"
+                          }`}
+                        >
+                          <Icon className="w-5 h-5" />
+                          {item.name}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </details>
+            </li>
+            {mainLinks.slice(1).map((link) => {
+              const Icon = link.icon;
+              return (
+                <li key={link.name}>
+                  <Link
+                    href={link.link}
+                    className={`flex items-center gap-2 ${
+                      isActive(link.link)
+                        ? "active font-semibold"
+                        : "hover:text-primary"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    {link.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        <div className="navbar-end">
+          <ThemeToggle />
+        </div>
+      </div>
+    </nav>
+  );
+}
