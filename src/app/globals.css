@@ -198,3 +198,8 @@ hr {
 .padding-inline {
   padding-inline: 0;
 }
+
+input {
+  padding-inline: 0;
+  padding-block: 0;
+}

@@ -1,4 +1,4 @@
-import HomeNavbar from "@/_components/HomeNavbar/HomeNavbar";
+import AdminNavbar from "./_components/AdminNavbar";
 
 export const metadata = {
   title: "Home",
@@ -8,7 +8,7 @@ export const metadata = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
-      <HomeNavbar />
+      <AdminNavbar />
       <main className="max-w-7xl mx-auto min-h-screen">{children}</main>
     </section>
   );

@@ -12,6 +12,7 @@ import {
 } from "react-icons/ai";
 import { BsCupHot } from "react-icons/bs";
 import { FaTshirt } from "react-icons/fa";
+import { FcManager } from "react-icons/fc";
 import { MdOutlinePhoneIphone } from "react-icons/md";
 
 export default function HomeNavbar() {
@@ -21,6 +22,7 @@ export default function HomeNavbar() {
     { name: "Home", link: "/", icon: AiOutlineHome },
     { name: "About", link: "/about", icon: AiOutlineInfoCircle },
     { name: "Contact", link: "/contact", icon: AiOutlineMail },
+    { name: "Admin", link: "/admin", icon: FcManager },
   ];
 
   const shopLinks = [

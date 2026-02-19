@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Logo from "@/components/Logo/Logo";
+import Logo from "@/_components/Logo/Logo";
 
 export default function NotFound() {
   const router = useRouter();

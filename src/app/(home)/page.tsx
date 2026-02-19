@@ -1,7 +1,7 @@
-import Carousel from "@/components/Carousel/Carousel";
-import FrockSection from "@/components/FrockSection/FrockSection.";
-import HomeMarquee from "@/components/HomeMarquee/HomeMarquee";
-import HomeSubmenu from "@/components/HomeSubmenu/HomeSubmenu";
+import Carousel from "@/_components/Carousel/Carousel";
+import FrockSection from "@/_components/FrockSection/FrockSection.";
+import HomeMarquee from "@/_components/HomeMarquee/HomeMarquee";
+import HomeSubmenu from "@/_components/HomeSubmenu/HomeSubmenu";
 
 export default function HomePage() {
   return (
