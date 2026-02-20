@@ -14,6 +14,7 @@ import {
   FaShoppingBag,
   FaShoppingBasket,
   FaTshirt,
+  FaUser,
   FaUserShield,
 } from "react-icons/fa";
 import ShoppingCartModal from "../ShoppingCart/ShoppingCartModal";
@@ -209,6 +210,9 @@ export default function HomeNavbar() {
 
         <div className="navbar-end gap-2">
           <ThemeToggle />
+          <Link href="/register" className="btn btn-accent btn-sm">
+            Register / Login
+          </Link>
           <button
             className="btn btn-ghost btn-circle"
             onClick={() => setIsModalOpen(!isModalOpen)}
