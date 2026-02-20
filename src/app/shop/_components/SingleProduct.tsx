@@ -1,31 +1,16 @@
 "use client";
 
+import { ProductItem } from "@/lib/MyInterface";
+import { saveProdectIdToLocalStorage } from "@/lib/ShoppingCart";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
+import { FaShoppingCart } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
 
-interface Frock {
-  _id: string;
-  image: string;
-  name: string;
-  price: number;
-  compareAtPrice?: number;
-  badge?: string | null;
-  description: string;
-  category: string;
-  stock: number;
-  isFeatured: boolean;
-  isActive: boolean;
-  tags: string[];
-  images: string[];
-  sku?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  about?: string;
-}
 export default function SingleProduct({ id }: { id: string }) {
-  const [frock, setFrock] = useState<Frock | null>(null);
+  const [product, setProduct] = useState<ProductItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeImage, setActiveImage] = useState<string | null>(null);
@@ -43,19 +28,26 @@ export default function SingleProduct({ id }: { id: string }) {
   //       month: "short",
   //       year: "numeric",
   //     });
-
+  const addToCart = (productId: string) => {
+    saveProdectIdToLocalStorage(productId, 1);
+    Swal.fire({
+      icon: "success",
+      title: "Added to cart",
+      text: "Product added to cart successfully",
+    });
+  };
   const fetchFrock = useCallback(async () => {
     try {
       const response = await fetch(`/api/products/${id}`);
       const data = await response.json();
       if (data.success) {
-        setFrock(data.data);
+        setProduct(data.data);
       } else {
         setError("Product not found.");
       }
     } catch (error) {
-      console.error("Failed to fetch frock:", error);
-      setError("Failed to fetch frock details.");
+      console.error("Failed to fetch product details:", error);
+      setError("Failed to fetch product details.");
     } finally {
       setLoading(false);
     }
@@ -137,7 +129,7 @@ export default function SingleProduct({ id }: { id: string }) {
     );
   }
 
-  if (!frock) {
+  if (!product) {
     return (
       <section className="w-full px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-6xl">
@@ -150,15 +142,15 @@ export default function SingleProduct({ id }: { id: string }) {
   }
 
   const gallery = [
-    frock.image,
-    ...frock.images.filter((img) => img !== frock.image),
+    product.image,
+    ...product.images.filter((img) => img !== product.image),
   ];
   const hasDiscount =
-    typeof frock.compareAtPrice === "number" &&
-    frock.compareAtPrice > frock.price;
+    typeof product.compareAtPrice === "number" &&
+    product.compareAtPrice > product.price;
   const savePercent = hasDiscount
     ? Math.round(
-        ((frock.compareAtPrice! - frock.price) / frock.compareAtPrice!) * 100,
+        ((product.compareAtPrice! - product.price) / product.compareAtPrice!) * 100,
       )
     : 0;
 
@@ -168,8 +160,8 @@ export default function SingleProduct({ id }: { id: string }) {
         <div className="space-y-3">
           <div className="relative aspect-4/5 overflow-hidden rounded-xl border border-base-300 bg-base-200/40">
             <Image
-              src={frock.image}
-              alt={frock.name}
+              src={product.image}
+              alt={product.name}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
@@ -191,7 +183,7 @@ export default function SingleProduct({ id }: { id: string }) {
                   >
                     <Image
                       src={img}
-                      alt={`${frock.name} image ${index + 1}`}
+                      alt={`${product.name} image ${index + 1}`}
                       fill
                       sizes="120px"
                       className="object-cover transition-transform duration-300 group-hover:scale-105"
@@ -205,43 +197,43 @@ export default function SingleProduct({ id }: { id: string }) {
 
         <div className="flex flex-col gap-4 sm:gap-5">
           <div className="flex flex-wrap items-center gap-2">
-            {frock.badge ? (
+            {product.badge ? (
               <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-medium uppercase tracking-wide text-base-content/80">
-                {frock.badge}
+                {product.badge}
               </span>
             ) : null}
-            {frock.isFeatured ? (
+            {product.isFeatured ? (
               <span className="rounded-full bg-base-200 px-3 py-1 text-xs font-medium uppercase tracking-wide text-base-content/80">
                 Featured
               </span>
             ) : null}
             {/* <span
               className={`rounded-full px-3 py-1 text-xs font-medium uppercase tracking-wide ${
-                frock.isActive
+                product.isActive
                   ? "bg-success/20 text-success"
                   : "bg-error/20 text-error"
               }`}
             >
-              {frock.isActive ? "Active" : "Inactive"}
+              {product.isActive ? "Active" : "Inactive"}
             </span> */}
           </div>
 
           <h1 className="text-2xl font-semibold leading-tight sm:text-3xl">
-            {frock.name}
+            {product.name}
           </h1>
 
           <p className="text-sm leading-relaxed text-base-content/80 sm:text-base">
-            {frock.description}
+            {product.description}
           </p>
 
           <div className="flex flex-wrap items-end gap-x-3 gap-y-1">
             <p className="text-2xl font-bold sm:text-3xl">
-              {formatPrice(frock.price)}
+              {formatPrice(product.price)}
             </p>
             {hasDiscount ? (
               <>
                 <span className="text-sm line-through text-base-content/55 sm:text-base">
-                  {formatPrice(frock.compareAtPrice!)}
+                  {formatPrice(product.compareAtPrice!)}
                 </span>
                 <span className="text-xl sm:text-2xl font-medium text-success">
                   Save {savePercent}%
@@ -256,7 +248,7 @@ export default function SingleProduct({ id }: { id: string }) {
                 Category
               </p>
               <p className="text-sm font-medium sm:text-base">
-                {frock.category}
+                {product.category}
               </p>
             </div>
             <div>
@@ -265,18 +257,18 @@ export default function SingleProduct({ id }: { id: string }) {
               </p>
               <p
                 className={`text-sm font-medium sm:text-base ${
-                  frock.stock > 0 ? "text-success" : "text-error"
+                  product.stock > 0 ? "text-success" : "text-error"
                 }`}
               >
-                {frock.stock > 0 ? `${frock.stock} available` : "Out of stock"}
+                {product.stock > 0 ? `${product.stock} available` : "Out of stock"}
               </p>
             </div>
-            {frock.sku && (
+            {product.sku && (
               <div>
                 <p className="text-xs uppercase tracking-wide text-base-content/60">
                   SKU
                 </p>
-                <p className="text-sm font-medium sm:text-base">{frock.sku}</p>
+                <p className="text-sm font-medium sm:text-base">{product.sku}</p>
               </div>
             )}
             {/* <div>
@@ -284,7 +276,7 @@ export default function SingleProduct({ id }: { id: string }) {
                 Created
               </p>
               <p className="text-sm font-medium sm:text-base">
-                {formatDate(frock.createdAt)}
+                {formatDate(product.createdAt)}
               </p>
             </div>
             <div>
@@ -292,16 +284,24 @@ export default function SingleProduct({ id }: { id: string }) {
                 Updated
               </p>
               <p className="text-sm font-medium sm:text-base">
-                {formatDate(frock.updatedAt)}
+                {formatDate(product.updatedAt)}
               </p>
             </div> */}
           </div>
-
-          {frock.tags.length ? (
+          <div className="">
+            <button
+              onClick={() => addToCart(product._id)}
+              className="btn btn-primary w-full flex items-center justify-center gap-2 flex-1"
+            >
+              <FaShoppingCart className="mr-2" />
+              <span>Add to Cart</span>
+            </button>
+          </div>
+          {product.tags.length ? (
             <div className="flex flex-wrap gap-2">
-              {frock.tags.map((tag) => (
+              {product.tags.map((tag) => (
                 <span
-                  key={`${frock._id}-${tag}`}
+                  key={`${product._id}-${tag}`}
                   className="rounded-md bg-base-200 px-2.5 py-1 text-xs text-base-content/80"
                 >
                   #{tag}
@@ -311,11 +311,11 @@ export default function SingleProduct({ id }: { id: string }) {
           ) : null}
         </div>
       </div>
-      {frock?.about && (
+      {product?.about && (
         <div className="">
           <h3 className="mt-8 text-xl font-semibold">About</h3>
           <p className="mt-2 text-base-content/80 text-justify sm:text-xl">
-            {frock.about}
+            {product.about}
           </p>
         </div>
       )}

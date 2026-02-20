@@ -4,6 +4,7 @@ import Logo from "../Logo/Logo";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 import {
   FaEnvelope,
   FaFemale,
@@ -11,11 +12,14 @@ import {
   FaInfoCircle,
   FaLayerGroup,
   FaShoppingBag,
+  FaShoppingBasket,
   FaTshirt,
   FaUserShield,
 } from "react-icons/fa";
+import ShoppingCartModal from "../ShoppingCart/ShoppingCartModal";
 
 export default function HomeNavbar() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const pathname = usePathname();
 
   const mainLinks = [
@@ -187,8 +191,18 @@ export default function HomeNavbar() {
           </ul>
         </div>
 
-        <div className="navbar-end">
+        <div className="navbar-end gap-2">
           <ThemeToggle />
+          <button
+            className="btn btn-ghost btn-circle"
+            onClick={() => setIsModalOpen(!isModalOpen)}
+          >
+            <FaShoppingBasket className="w-8 h-8" />
+          </button>
+          <ShoppingCartModal
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
         </div>
       </div>
     </nav>

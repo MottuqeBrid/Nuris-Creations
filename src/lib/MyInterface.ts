@@ -15,4 +15,5 @@ export interface ProductItem {
   sku?: string | null;
   createdAt: string;
   updatedAt: string;
+  about?: string;
 }

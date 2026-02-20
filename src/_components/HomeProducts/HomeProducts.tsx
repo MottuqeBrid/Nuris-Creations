@@ -1,11 +1,13 @@
 "use client";
 
 import { ProductItem } from "@/lib/MyInterface";
+import { saveProdectIdToLocalStorage } from "@/lib/ShoppingCart";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
+import Swal from "sweetalert2";
 
 export default function HomeProducts({
   text,
@@ -83,6 +85,15 @@ export default function HomeProducts({
   }, [badge, Featured]);
 
   const sectionTitle = text || "Products";
+
+  const addToCart = (productId: string) => {
+    saveProdectIdToLocalStorage(productId, 1);
+    Swal.fire({
+      icon: "success",
+      title: "Added to cart",
+      text: "Product added to cart successfully",
+    });
+  };
 
   return (
     <section
@@ -216,7 +227,13 @@ export default function HomeProducts({
                     </div>
                   ) : null}
 
-                  <div className="card-actions justify-end">
+                  <div className="card-actions justify-between">
+                    <button
+                      onClick={() => addToCart(product._id)}
+                      className="btn btn-outline btn-sm"
+                    >
+                      Add to Cart
+                    </button>
                     <Link
                       href={`/shop/${getCategoryRoute(product.category)}/${product._id}`}
                       className="btn btn-primary btn-sm"

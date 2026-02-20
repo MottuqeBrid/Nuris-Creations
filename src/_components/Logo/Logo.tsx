@@ -11,6 +11,7 @@ export default function Logo() {
           alt="Logo"
           width={48}
           height={48}
+          sizes="100dvw"
           className="w-full h-full object-contain"
           priority
         />
@@ -22,7 +23,7 @@ export default function Logo() {
           className="text-sm sm:text-base md:text-lg font-bold leading-tight"
           style={{ color: "var(--text-primary)" }}
         >
-          Nuris
+          Nuri&apos;s
         </span>
         <span
           className="text-xs sm:text-sm md:text-base bg-clip-text text-transparent font-semibold"

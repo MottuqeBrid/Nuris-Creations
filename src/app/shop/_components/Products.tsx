@@ -1,8 +1,11 @@
 "use client";
 
+import { saveProdectIdToLocalStorage } from "@/lib/ShoppingCart";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { TbShoppingCart } from "react-icons/tb";
+import Swal from "sweetalert2";
 interface ProductItem {
   _id: string;
   image: string;
@@ -49,6 +52,15 @@ export default function Products({ page }: { page: string }) {
     fetchProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
+
+  const addToCart = (productId: string) => {
+    saveProdectIdToLocalStorage(productId, 1);
+    Swal.fire({
+      icon: "success",
+      title: "Added to cart",
+      text: "Product added to cart successfully",
+    });
+  };
 
   const formatPrice = (value: number) =>
     new Intl.NumberFormat("en-BD", {
@@ -179,10 +191,15 @@ export default function Products({ page }: { page: string }) {
                   </div>
                 ) : null}
 
-                {/* <div className="mt-auto flex items-center justify-between pt-1 text-[10px] text-base-content/55 sm:text-xs">
-                  <span>SKU: {product.sku || "N/A"}</span>
-                  <span>{product.isActive ? "Active" : "Inactive"}</span>
-                </div> */}
+                <div className="mt-auto flex items-center justify-between pt-1 text-[10px] text-base-content/55 sm:text-xs">
+                  <button
+                    onClick={() => addToCart(product._id)}
+                    className="btn btn-outline btn-xs w-full flex items-center gap-1 justify-center sm:btn-sm py-4"
+                  >
+                    <TbShoppingCart className="h-4 w-4" />
+                    <span>Add to cart</span>
+                  </button>
+                </div>
               </div>
             </article>
           ))}
