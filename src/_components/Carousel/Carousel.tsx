@@ -3,35 +3,77 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import { Carousel as ReactCarousel } from "react-responsive-carousel";
 import Link from "next/link";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { CaruselType } from "@/Schema/Carusel.model";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 export default function Carousel() {
-  const slides = [
-    {
-      image: "/logo.png",
-      title: "Custom Mugs",
-      description: "Personalized ceramic mugs for your loved ones",
-      link: "/shop/mugs",
-    },
-    {
-      image: "/logo.png",
-      title: "Premium T-Shirts",
-      description: "High-quality custom printed t-shirts",
-      link: "/shop/tshirts",
-    },
-    {
-      image: "/logo.png",
-      title: "Phone Cases",
-      description: "Unique and durable phone protection",
-      link: "/shop/phone-cases",
-    },
-  ];
+  const [slides, setSlides] = useState<CaruselType[]>([]);
+  const [loading, setLoading] = useState(true);
+  // const slides = [
+  //   {
+  //     image: "/logo.png",
+  //     title: "Custom Mugs",
+  //     description: "Personalized ceramic mugs for your loved ones",
+  //     link: "/shop/mugs",
+  //   },
+  //   {
+  //     image: "/logo.png",
+  //     title: "Premium T-Shirts",
+  //     description: "High-quality custom printed t-shirts",
+  //     link: "/shop/tshirts",
+  //   },
+  //   {
+  //     image: "/logo.png",
+  //     title: "Phone Cases",
+  //     description: "Unique and durable phone protection",
+  //     link: "/shop/phone-cases",
+  //   },
+  // ];
+  useEffect(() => {
+    const fetchSlides = async () => {
+      try {
+        const response = await fetch("/api/admin/carusel", {
+          cache: "no-store",
+        });
+        console.log(response);
+        if (!response.ok) {
+          throw new Error("Failed to load carousel slides.");
+        }
+        const payload = await response.json();
+        setSlides(payload.data || []);
+      } catch (err) {
+        console.error("Error fetching carousel slides:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSlides();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="w-full">
+        <div
+          className="rounded-lg overflow-hidden shadow-lg w-full mx-auto"
+          style={{
+            height: "400px",
+            aspectRatio: "16/9",
+          }}
+        >
+          <Skeleton className="h-full w-full" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">
       <div
         className="rounded-lg overflow-hidden shadow-lg w-full mx-auto"
         style={{
-          height: "400px",
+          height: "70dvh",
           aspectRatio: "16/9",
         }}
       >
@@ -40,7 +82,7 @@ export default function Carousel() {
           autoPlay
           infiniteLoop
           showStatus={false}
-          interval={4000}
+          interval={3500}
           transitionTime={600}
           swipeable
           emulateTouch
@@ -58,6 +100,9 @@ export default function Carousel() {
                 height={400}
                 src={slide.image}
                 alt={slide.title}
+                placeholder="blur"
+                blurDataURL={slide.image}
+                sizes="100dvw"
                 className="w-full h-full object-cover"
               />
 
@@ -68,7 +113,7 @@ export default function Carousel() {
               <div className="absolute inset-0 flex flex-col items-center justify-end p-4 sm:p-6 lg:p-8">
                 <div className="text-center space-y-3 sm:space-y-4 w-full max-w-2xl">
                   {/* Title */}
-                  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+                  <h2 className="text-2xl sm:text-4xl lg:text-4xl font-bold leading-tight">
                     {slide.title}
                   </h2>
 
@@ -78,14 +123,16 @@ export default function Carousel() {
                   </p>
 
                   {/* CTA Button */}
-                  <div className="pt-2 sm:pt-3">
-                    <Link
-                      href={slide.link}
-                      className="inline-block px-6 sm:px-8 py-2 sm:py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
-                    >
-                      Shop Now
-                    </Link>
-                  </div>
+                  {slide.link && (
+                    <div className="pt-2 sm:pt-3">
+                      <Link
+                        href={slide.link}
+                        className="inline-block px-6 sm:px-8 py-2 sm:py-3 bg-primary hover:bg-primary-dark text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 active:scale-95"
+                      >
+                        Shop Now
+                      </Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
