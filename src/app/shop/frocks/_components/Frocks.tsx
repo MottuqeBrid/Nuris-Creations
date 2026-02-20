@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 interface Frock {
@@ -163,7 +164,10 @@ export default function Frocks() {
               key={frock._id}
               className="flex h-full flex-col overflow-hidden rounded-2xl border border-base-300 bg-base-100"
             >
-              <div className="hover-3d group cursor-pointer w-full">
+              <Link
+                href={`/shop/frocks/${frock._id}`}
+                className="hover-3d group cursor-pointer w-full"
+              >
                 <figure className="relative aspect-4/5 w-full overflow-hidden">
                   <Image
                     width={400}
@@ -183,13 +187,13 @@ export default function Frocks() {
                 <div></div>
                 <div></div>
                 <div></div>
-              </div>
+              </Link>
               {/* Product details */}
               <div className="flex flex-1 flex-col gap-2 p-4 sm:p-5">
                 <div className="flex items-start justify-between gap-2">
-                  <p className="line-clamp-2 text-sm font-medium sm:text-base">
+                  <Link href={`/shop/frocks/${frock._id}`} className="line-clamp-2 text-sm font-medium text-primary sm:text-xl">
                     {frock.name}
-                  </p>
+                  </Link>
                   {frock.badge ? (
                     <span className="shrink-0 rounded-full bg-base-200 px-2 py-1 text-[10px] font-medium uppercase tracking-wide text-base-content/80 sm:text-xs">
                       {frock.badge}
@@ -222,7 +226,7 @@ export default function Frocks() {
                       <span className="text-xs line-through text-base-content/50 sm:text-sm">
                         {formatPrice(frock.compareAtPrice)}
                       </span>
-                      <span className="text-xs font-medium text-success sm:text-sm">
+                      <span className="text-xl font-medium text-success sm:text-2xl">
                         Save{" "}
                         {Math.round(
                           ((frock.compareAtPrice - frock.price) /
@@ -252,10 +256,10 @@ export default function Frocks() {
                   </div>
                 ) : null}
 
-                <div className="mt-auto flex items-center justify-between pt-1 text-[10px] text-base-content/55 sm:text-xs">
+                {/* <div className="mt-auto flex items-center justify-between pt-1 text-[10px] text-base-content/55 sm:text-xs">
                   <span>SKU: {frock.sku || "N/A"}</span>
                   <span>{frock.isActive ? "Active" : "Inactive"}</span>
-                </div>
+                </div> */}
               </div>
             </article>
           ))}
