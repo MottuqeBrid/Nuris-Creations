@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "react-loading-skeleton/dist/skeleton.css";
 @plugin "daisyui";
 
 /* Nuris Creations Theme - Light and Dark Mode */

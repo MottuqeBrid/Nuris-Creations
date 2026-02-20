@@ -38,11 +38,12 @@ export async function GET(request: NextRequest) {
         totalItems,
         totalPages,
       },
+      success: true,
     });
   } catch (error) {
     console.error("GET /api/admin/products failed", error);
     return NextResponse.json(
-      { message: "Failed to fetch products." },
+      { message: "Failed to fetch products.", success: false },
       { status: 500 },
     );
   }
@@ -63,21 +64,30 @@ export async function POST(request: NextRequest) {
 
     if (!name || !description || !category || !image) {
       return NextResponse.json(
-        { message: "name, description, category and image are required." },
+        {
+          message: "name, description, category and image are required.",
+          success: false,
+        },
         { status: 400 },
       );
     }
 
     if (Number.isNaN(price) || price < 0) {
       return NextResponse.json(
-        { message: "price must be a valid non-negative number." },
+        {
+          message: "price must be a valid non-negative number.",
+          success: false,
+        },
         { status: 400 },
       );
     }
 
     if (Number.isNaN(stock) || stock < 0) {
       return NextResponse.json(
-        { message: "stock must be a valid non-negative number." },
+        {
+          message: "stock must be a valid non-negative number.",
+          success: false,
+        },
         { status: 400 },
       );
     }
@@ -110,20 +120,23 @@ export async function POST(request: NextRequest) {
         : [],
     });
 
-    return NextResponse.json({ data: product }, { status: 201 });
+    return NextResponse.json({ data: product, success: true }, { status: 201 });
   } catch (error) {
     const err = error as { code?: number };
 
     if (err.code === 11000) {
       return NextResponse.json(
-        { message: "Duplicate value found for a unique field (slug or sku)." },
+        {
+          message: "Duplicate value found for a unique field (slug or sku).",
+          success: false,
+        },
         { status: 409 },
       );
     }
 
     console.error("POST /api/admin/products failed", error);
     return NextResponse.json(
-      { message: "Failed to create product." },
+      { message: "Failed to create product.", success: false },
       { status: 500 },
     );
   }

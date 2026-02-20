@@ -2,6 +2,11 @@
 
 import Image from "next/image";
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import Swal from "sweetalert2";
+import imgbbImageUpload from "@/lib/imgbbImageUpload";
+import { generateSKU } from "@/lib/generateSKU";
+import Skeleton from "react-loading-skeleton";
+import { FaEdit, FaTrash } from "react-icons/fa";
 
 type ProductItem = {
   _id: string;
@@ -12,8 +17,11 @@ type ProductItem = {
   price: number;
   compareAtPrice: number | null;
   image: string;
+  images: string[];
   badge: "Best Seller" | "New" | "Limited" | "Sale" | null;
   stock: number;
+  sku: string | null;
+  tags: [string] | null;
   isFeatured: boolean;
   isActive: boolean;
   createdAt: string;
@@ -26,7 +34,6 @@ type ProductFormState = {
   category: string;
   price: string;
   compareAtPrice: string;
-  image: string;
   stock: string;
   badge: string;
   sku: string;
@@ -44,7 +51,6 @@ const initialForm: ProductFormState = {
   category: "Frock",
   price: "",
   compareAtPrice: "",
-  image: "",
   stock: "0",
   badge: "",
   sku: "",
@@ -56,7 +62,7 @@ const initialForm: ProductFormState = {
 const formatCurrency = (value: number) =>
   new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency: "USD",
+    currency: "BDT",
   }).format(value);
 
 export default function Page() {
@@ -71,6 +77,13 @@ export default function Page() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [coverImageFile, setCoverImageFile] = useState<File | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  const [galleryImageFiles, setGalleryImageFiles] = useState<File[]>([]);
+  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(
+    null,
+  );
 
   const hasProducts = useMemo(() => products.length > 0, [products.length]);
 
@@ -119,9 +132,108 @@ export default function Page() {
   };
 
   const closeModal = () => {
+    if (coverPreview?.startsWith("blob:")) {
+      URL.revokeObjectURL(coverPreview);
+    }
+    galleryPreviews.forEach((preview) => {
+      if (preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+
     setIsModalOpen(false);
     setSubmitError(null);
     setForm(initialForm);
+    setCoverImageFile(null);
+    setCoverPreview(null);
+    setGalleryImageFiles([]);
+    setGalleryPreviews([]);
+    setSelectedProduct(null);
+  };
+
+  const handleCoverImageChange = (file: File | null) => {
+    if (coverPreview) {
+      URL.revokeObjectURL(coverPreview);
+    }
+
+    setCoverImageFile(file);
+    setCoverPreview(file ? URL.createObjectURL(file) : null);
+  };
+
+  const handleGalleryImagesChange = (files: FileList | null) => {
+    if (!files || files.length === 0) {
+      return;
+    }
+
+    const selectedFiles = Array.from(files);
+
+    const remainingSlots = Math.max(8 - galleryImageFiles.length, 0);
+
+    if (remainingSlots === 0) {
+      Swal.fire({
+        title: "Limit Reached",
+        text: "You can upload a maximum of 8 additional images.",
+        icon: "info",
+      });
+      return;
+    }
+
+    const filesToAdd = selectedFiles.slice(0, remainingSlots);
+
+    if (selectedFiles.length > remainingSlots) {
+      Swal.fire({
+        title: "Some images skipped",
+        text: "Only first images were added due to the 8-image limit.",
+        icon: "warning",
+      });
+    }
+
+    const newPreviews = filesToAdd.map((file) => URL.createObjectURL(file));
+    setGalleryImageFiles((prev) => [...prev, ...filesToAdd]);
+    setGalleryPreviews((prev) => [...prev, ...newPreviews]);
+  };
+
+  const removeGalleryImage = (indexToRemove: number) => {
+    setGalleryPreviews((prevPreviews) => {
+      const previewToRemove = prevPreviews[indexToRemove];
+      if (previewToRemove?.startsWith("blob:")) {
+        URL.revokeObjectURL(previewToRemove);
+
+        const blobIndex = prevPreviews
+          .slice(0, indexToRemove)
+          .filter((preview) => preview.startsWith("blob:")).length;
+
+        setGalleryImageFiles((prevFiles) =>
+          prevFiles.filter((_, index) => index !== blobIndex),
+        );
+      }
+
+      return prevPreviews.filter((_, index) => index !== indexToRemove);
+    });
+  };
+
+  const clearGalleryImages = () => {
+    galleryPreviews.forEach((preview) => {
+      if (preview.startsWith("blob:")) {
+        URL.revokeObjectURL(preview);
+      }
+    });
+    setGalleryImageFiles([]);
+    setGalleryPreviews([]);
+  };
+
+  const openCreateModal = () => {
+    setSelectedProduct(null);
+    setForm({
+      ...initialForm,
+      sku: generateSKU(), // Pre-populate with generated SKU
+    });
+    setCoverImageFile(null);
+    setCoverPreview(null);
+    setGalleryImageFiles([]);
+    setGalleryPreviews([]);
+    setSubmitError(null);
+    setIsModalOpen(true);
   };
 
   const handleAddProduct = async (event: FormEvent<HTMLFormElement>) => {
@@ -129,29 +241,73 @@ export default function Page() {
     setIsSubmitting(true);
     setSubmitError(null);
 
-    const body = {
-      name: form.name,
-      slug: form.slug,
-      description: form.description,
-      category: form.category,
-      price: Number(form.price),
-      compareAtPrice:
-        form.compareAtPrice.trim() === "" ? null : Number(form.compareAtPrice),
-      image: form.image,
-      stock: Number(form.stock),
-      badge: form.badge || null,
-      sku: form.sku || null,
-      tags: form.tags
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      isFeatured: form.isFeatured,
-      isActive: form.isActive,
-    };
+    const isEditMode = Boolean(selectedProduct);
+
+    if (!isEditMode && !coverImageFile) {
+      const message = "Please select a cover image.";
+      Swal.fire({
+        title: "Error",
+        text: message,
+        icon: "error",
+      });
+      setSubmitError(message);
+      setIsSubmitting(false);
+      return;
+    }
+
+    let coverImageUrl = selectedProduct?.image || "";
+    let galleryImageUrls = selectedProduct
+      ? galleryPreviews.filter((preview) => !preview.startsWith("blob:"))
+      : [];
 
     try {
-      const response = await fetch("/api/admin/products", {
-        method: "POST",
+      if (coverImageFile) {
+        coverImageUrl = await imgbbImageUpload(coverImageFile);
+      }
+
+      if (galleryImageFiles.length > 0) {
+        const uploadedGalleryImages = await Promise.all(
+          galleryImageFiles.map((file) => imgbbImageUpload(file)),
+        );
+        galleryImageUrls = [...galleryImageUrls, ...uploadedGalleryImages];
+      }
+
+      // Auto-generate SKU for new products if not provided
+      const productSKU = selectedProduct
+        ? form.sku || null // Keep existing or null for edits
+        : form.sku.trim() || generateSKU(); // Use provided or generate for new
+
+      const body = {
+        name: form.name,
+        slug: form.slug,
+        description: form.description,
+        category: form.category,
+        price: Number(form.price),
+        compareAtPrice:
+          form.compareAtPrice.trim() === ""
+            ? null
+            : Number(form.compareAtPrice),
+        image: coverImageUrl,
+        images: galleryImageUrls,
+        stock: Number(form.stock),
+        badge: form.badge || null,
+        sku: productSKU,
+        tags: form.tags
+          .split(",")
+          .map((tag) => tag.trim())
+          .filter(Boolean),
+        isFeatured: form.isFeatured,
+        isActive: form.isActive,
+      };
+
+      const endpoint = selectedProduct
+        ? `/api/admin/products/${selectedProduct._id}`
+        : "/api/admin/products";
+
+      const method = selectedProduct ? "PUT" : "POST";
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           "Content-Type": "application/json",
         },
@@ -160,18 +316,107 @@ export default function Page() {
 
       if (!response.ok) {
         const payload = await response.json().catch(() => null);
+        Swal.fire({
+          title: "Error",
+          text: payload?.message || "Failed to create product.",
+          icon: "error",
+        });
         throw new Error(payload?.message || "Failed to create product.");
       }
 
+      Swal.fire({
+        title: "Success",
+        text: selectedProduct
+          ? "Product updated successfully."
+          : "Product created successfully.",
+        icon: "success",
+      });
+
       closeModal();
-      await fetchProducts(1);
+      await fetchProducts(isEditMode ? page : 1);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to create product.";
+      Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
       setSubmitError(errorMessage);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleDeleteProduct = async (productId: string) => {
+    const confirm = await Swal.fire({
+      title: "Delete product?",
+      text: "This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Delete",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+    });
+
+    if (!confirm.isConfirmed) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/products/${productId}`, {
+        method: "DELETE",
+      });
+
+      const payload = await response.json().catch(() => null);
+
+      if (!response.ok || !payload?.success) {
+        throw new Error(payload?.message || "Failed to delete product.");
+      }
+
+      await Swal.fire({
+        title: "Deleted",
+        text: "Product deleted successfully.",
+        icon: "success",
+      });
+
+      const nextPage = products.length === 1 && page > 1 ? page - 1 : page;
+      await fetchProducts(nextPage);
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete product.";
+      await Swal.fire({
+        title: "Error",
+        text: errorMessage,
+        icon: "error",
+      });
+    }
+  };
+
+  const handleUpdateProduct = (product: ProductItem) => {
+    console.log(product);
+    setSelectedProduct(product);
+    setSubmitError(null);
+    setForm({
+      name: product.name,
+      slug: product.slug,
+      description: product.description,
+      category: product.category,
+      price: String(product.price),
+      compareAtPrice:
+        product.compareAtPrice === null ? "" : String(product.compareAtPrice),
+      stock: String(product.stock),
+      badge: product.badge || "",
+      sku: product.sku || "",
+      tags: product.tags?.join(", ") || "",
+      isFeatured: product.isFeatured,
+      isActive: product.isActive,
+    });
+    setCoverImageFile(null);
+    setCoverPreview(product.image);
+    setGalleryImageFiles([]);
+    setGalleryPreviews(product.images || []);
+    setIsModalOpen(true);
   };
 
   return (
@@ -186,7 +431,7 @@ export default function Page() {
         <button
           type="button"
           className="btn btn-primary w-full sm:w-auto"
-          onClick={() => setIsModalOpen(true)}
+          onClick={openCreateModal}
         >
           Add Product
         </button>
@@ -208,8 +453,14 @@ export default function Page() {
           {Array.from({ length: 6 }).map((_, index) => (
             <div
               key={index}
-              className="h-56 rounded-xl bg-base-300 animate-pulse"
-            />
+              className="rounded-xl overflow-hidden border border-(--border-color) bg-(--bg-secondary) p-4"
+            >
+              <Skeleton height={176} className="mb-4 rounded-md" />
+              <Skeleton height={18} width="40%" className="mb-2" />
+              <Skeleton height={22} width="75%" className="mb-2" />
+              <Skeleton height={16} count={2} className="mb-2" />
+              <Skeleton height={20} width="35%" />
+            </div>
           ))}
         </div>
       ) : error ? (
@@ -237,7 +488,7 @@ export default function Page() {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="space-y-3 p-4">
+              <div className="space-y-3 p-4 h-full flex-1 border">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="badge badge-outline">
                     {product.category}
@@ -274,6 +525,20 @@ export default function Page() {
                     Stock: {product.stock}
                   </span>
                 </div>
+                <div className="flex items-center justify-between text-sm">
+                  <button
+                    onClick={() => handleUpdateProduct(product)}
+                    className="btn btn-outline btn-sm gap-2"
+                  >
+                    <FaEdit /> Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteProduct(product._id)}
+                    className="btn btn-outline btn-sm gap-2"
+                  >
+                    <FaTrash /> Delete
+                  </button>
+                </div>
               </div>
             </article>
           ))}
@@ -306,7 +571,9 @@ export default function Page() {
         <div className="fixed inset-0 z-50 bg-black/50 px-4 py-6 sm:px-6 overflow-y-auto">
           <div className="mx-auto w-full max-w-2xl rounded-xl bg-(--bg-primary) border border-(--border-color) shadow-xl">
             <div className="flex items-center justify-between border-b border-(--border-color) p-4">
-              <h2 className="text-xl font-semibold">Add Product</h2>
+              <h2 className="text-xl font-semibold">
+                {selectedProduct ? "Update Product" : "Add Product"}
+              </h2>
               <button
                 type="button"
                 className="btn btn-sm btn-ghost"
@@ -425,7 +692,7 @@ export default function Page() {
                     }
                   />
                 </label>
-
+                {/* {console.log(form)} */}
                 <label className="form-control w-full">
                   <span className="label-text mb-1">SKU</span>
                   <input
@@ -438,16 +705,94 @@ export default function Page() {
                 </label>
 
                 <label className="form-control w-full sm:col-span-2">
-                  <span className="label-text mb-1">Image URL *</span>
+                  <span className="label-text mb-1">
+                    Cover Image {selectedProduct ? "" : "*"}
+                  </span>
                   <input
-                    required
+                    required={!selectedProduct}
+                    type="file"
+                    accept="image/*"
                     className="input input-bordered w-full"
-                    value={form.image}
                     onChange={(event) =>
-                      handleChange("image", event.currentTarget.value)
+                      handleCoverImageChange(
+                        event.currentTarget.files?.[0] || null,
+                      )
                     }
                   />
                 </label>
+
+                {coverPreview ? (
+                  <div className="sm:col-span-2 rounded-lg border border-(--border-color) p-3">
+                    <p className="text-sm font-medium mb-2">Cover Preview</p>
+                    <div className="relative h-44 w-full overflow-hidden rounded-md bg-base-200">
+                      <Image
+                        src={coverPreview}
+                        alt="Cover preview"
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                  </div>
+                ) : null}
+
+                <label className="form-control w-full sm:col-span-2">
+                  <span className="label-text mb-1">Additional Images</span>
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="file-input file-input-bordered w-full"
+                    onChange={(event) => {
+                      handleGalleryImagesChange(event.currentTarget.files);
+                      event.currentTarget.value = "";
+                    }}
+                  />
+                  <span className="label-text-alt mt-1 text-(--text-secondary)">
+                    You can select multiple at once or add one-by-one (max 8).
+                  </span>
+                </label>
+
+                {galleryPreviews.length > 0 ? (
+                  <div className="sm:col-span-2 rounded-lg border border-(--border-color) p-3">
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <p className="text-sm font-medium">
+                        Gallery Preview ({galleryPreviews.length}/8)
+                      </p>
+                      <button
+                        type="button"
+                        className="btn btn-xs btn-ghost"
+                        onClick={clearGalleryImages}
+                      >
+                        Clear all
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {galleryPreviews.map((preview, index) => (
+                        <div
+                          key={`${preview}-${index}`}
+                          className="relative h-28 overflow-hidden rounded-md bg-base-200"
+                        >
+                          <button
+                            type="button"
+                            className="btn btn-xs btn-circle absolute top-1 right-1 z-10"
+                            onClick={() => removeGalleryImage(index)}
+                            aria-label={`Remove image ${index + 1}`}
+                          >
+                            ✕
+                          </button>
+                          <Image
+                            src={preview}
+                            alt={`Gallery preview ${index + 1}`}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
 
                 <label className="form-control w-full sm:col-span-2">
                   <span className="label-text mb-1">
@@ -508,7 +853,11 @@ export default function Page() {
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Saving..." : "Save Product"}
+                  {isSubmitting
+                    ? "Saving..."
+                    : selectedProduct
+                      ? "Update Product"
+                      : "Save Product"}
                 </button>
               </div>
             </form>
