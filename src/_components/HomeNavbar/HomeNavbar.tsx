@@ -4,7 +4,7 @@ import Logo from "../Logo/Logo";
 import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FaEnvelope,
   FaFemale,
@@ -21,6 +21,22 @@ import ShoppingCartModal from "../ShoppingCart/ShoppingCartModal";
 export default function HomeNavbar() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const pathname = usePathname();
+  const shopMenuRef = useRef<HTMLDetailsElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (!shopMenuRef.current) return;
+
+      if (!shopMenuRef.current.contains(event.target as Node)) {
+        shopMenuRef.current.open = false;
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const mainLinks = [
     { name: "Home", link: "/", icon: FaHome },
@@ -143,7 +159,7 @@ export default function HomeNavbar() {
               </Link>
             </li>
             <li>
-              <details>
+              <details ref={shopMenuRef}>
                 <summary className="flex items-center gap-2 hover:text-primary">
                   <FaShoppingBag className="w-5 h-5" />
                   Shop

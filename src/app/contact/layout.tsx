@@ -2,7 +2,7 @@ import FooterPage from "@/_components/Footer/FooterPage";
 import HomeNavbar from "@/_components/HomeNavbar/HomeNavbar";
 
 export const metadata = {
-  title: "Home",
+  title: "Contact Us",
   description: "Nuri's Creations",
 };
 

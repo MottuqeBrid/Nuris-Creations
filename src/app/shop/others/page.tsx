@@ -1,4 +1,8 @@
 import Products from "../_components/Products";
+export const metadata = {
+  title: "Others",
+  description: "Nuri's Creations",
+};
 
 export default function Page() {
   return (
