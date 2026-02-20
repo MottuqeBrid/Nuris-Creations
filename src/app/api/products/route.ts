@@ -5,14 +5,31 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const category = searchParams.get("category");
+  const badge = searchParams.get("badge");
+  const featured = searchParams.get("featured");
+  const limit = searchParams.get("limit");
   await connectDB();
-  const query: { category?: string } = {};
+  const query: {
+    category?: string;
+    badge?: string;
+    featured?: boolean;
+    isFeatured?: boolean;
+  } = {};
   if (category) {
     query.category = category.trim();
   }
-  console.log(query);
+  if (badge) {
+    query.badge = badge.trim();
+  }
+  if (featured === "true") {
+    query.isFeatured = true;
+  }
   try {
-    const products = await Product.find(query).sort({ createdAt: -1 }).lean();
+    let productsQuery = Product.find(query).sort({ createdAt: -1 });
+    if (limit) {
+      productsQuery = productsQuery.limit(parseInt(limit));
+    }
+    const products = await productsQuery.lean();
     return NextResponse.json({ success: true, data: products });
   } catch (error) {
     console.error("GET /api/products failed", error);

@@ -1,19 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { GiLargeDress } from "react-icons/gi";
-import { MdOutlinePhoneIphone } from "react-icons/md";
-import { TbShirt } from "react-icons/tb";
+import { FaLayerGroup, FaTshirt } from "react-icons/fa";
+import { GiLargeDress, GiTankTop } from "react-icons/gi";
 
 export default function HomeSubmenu() {
   const links = [
-    { name: "Frock", href: "/shop/frocks", icon: GiLargeDress },
-    { name: "T-Shirts", href: "/shop/tshirts", icon: TbShirt },
-    {
-      name: "Phone Cases",
-      href: "/shop/phone-cases",
-      icon: MdOutlinePhoneIphone,
-    },
+    { name: "Frocks", href: "/shop/frocks", icon: GiLargeDress },
+    { name: "Nimas", href: "/shop/nimas", icon: FaTshirt },
+    { name: "Blouses", href: "/shop/blouses", icon: GiTankTop },
+    { name: "Others", href: "/shop/others", icon: FaLayerGroup },
   ];
 
   return (

@@ -1,6 +1,6 @@
 import Carousel from "@/_components/Carousel/Carousel";
-import FrockSection from "@/_components/FrockSection/FrockSection.";
 import HomeMarquee from "@/_components/HomeMarquee/HomeMarquee";
+import HomeProducts from "@/_components/HomeProducts/HomeProducts";
 import HomeSubmenu from "@/_components/HomeSubmenu/HomeSubmenu";
 
 export default function HomePage() {
@@ -9,18 +9,11 @@ export default function HomePage() {
       <Carousel />
       <HomeSubmenu />
       <HomeMarquee />
-      <FrockSection
-        title="Featured Products"
-        description="Discover our handpicked collection of customizable products. Each item is carefully crafted to bring your creative ideas to life."
-      />
-      <FrockSection
-        title="New Arrivals"
-        description="Explore the latest additions to our collection, featuring unique designs and high-quality craftsmanship."
-      />
-      <p>
-        Nuri&apos;s Creations is a small business that specializes in creating
-        unique and personalized gifts for all occasions.
-      </p>
+      <HomeProducts text="Best Sellers" badge="Best Seller" />
+      <HomeProducts text="Featured Products" Featured={true} />
+      <HomeProducts text="New Arrivals" badge="New" />
+      <HomeProducts text="Limited Edition" badge="Limited" />
+      <HomeProducts text="Sale Items" badge="Sale" />
     </div>
   );
 }
