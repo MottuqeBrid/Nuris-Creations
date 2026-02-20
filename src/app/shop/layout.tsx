@@ -1,3 +1,4 @@
+import FooterPage from "@/_components/Footer/FooterPage";
 import HomeNavbar from "@/_components/HomeNavbar/HomeNavbar";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -5,6 +6,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div>
       <HomeNavbar />
       <main className="mx-auto max-w-7xl min-h-dvh">{children}</main>
+      <FooterPage />
     </div>
   );
 }

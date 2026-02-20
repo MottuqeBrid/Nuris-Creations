@@ -1,12 +1,10 @@
-import FrockSection from "@/_components/FrockSection/FrockSection.";
+import Frocks from "./_components/Frocks";
 
 export default function Page() {
   return (
     <div>
-      <FrockSection
-        title="Featured Products"
-        description="Discover our handpicked collection of customizable products. Each item is carefully crafted to bring your creative ideas to life."
-      />
+      <h1>Nuri&apos;s Design Frocks</h1>
+      <Frocks />
     </div>
   );
 }
