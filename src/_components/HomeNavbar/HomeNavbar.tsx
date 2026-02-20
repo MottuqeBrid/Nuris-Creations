@@ -43,7 +43,7 @@ export default function HomeNavbar() {
     { name: "Home", link: "/", icon: FaHome },
     { name: "About", link: "/about", icon: FaInfoCircle },
     { name: "Contact", link: "/contact", icon: FaEnvelope },
-    { name: "Admin", link: "/admin", icon: FaUserShield },
+    // { name: "Admin", link: "/admin", icon: FaUserShield },
   ];
 
   const shopLinks = [
