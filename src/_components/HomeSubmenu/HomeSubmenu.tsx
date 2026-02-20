@@ -24,7 +24,7 @@ export default function HomeSubmenu() {
               className="
                 flex items-center gap-2 px-4 sm:px-6 py-3 
                 rounded-lg border border-[(--border-color)] 
-                bg-secondary text-text-primary
+                bg-transparent text-text-primary
                 font-semibold text-sm sm:text-base
                 transition-all duration-300
                 hover:border-primary hover:bg-primary hover:text-color-primary

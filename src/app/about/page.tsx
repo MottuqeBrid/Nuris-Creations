@@ -1,6 +1,6 @@
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[linear-gradient(135deg,#fff3e7_0%,#ffffff_45%,#e9f4ff_100%)]">
+    <main className="min-h-screen bg-base-200">
       <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <div className="space-y-6">

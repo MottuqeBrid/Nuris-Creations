@@ -1,7 +1,7 @@
 import styles from "./contact.module.css";
 export default function ContactPage() {
   return (
-    <main className="min-h-screen bg-[radial-gradient(circle_at_10%_20%,#ffe9d6_0%,#ffffff_45%),radial-gradient(circle_at_80%_0%,#e8f2ff_0%,#ffffff_40%)]">
+    <main className="min-h-screen bg-base-200">
       <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="mb-10 space-y-4">
           <p className="text-xs uppercase tracking-[0.35em] text-base-content/60">

@@ -9,65 +9,63 @@
   name: "light";
   default: true;
   /* Light Theme - Primary Colors */
-  --color-primary: #a020f0; /* Purple from logo */
-  --color-primary-dark: #7c1dd4;
-  --color-primary-light: #c084fc;
+  --color-primary: #7c3aed; /* Royal Lavender */
+  --color-primary-dark: #5b21b6;
+  --color-primary-light: #c4b5fd;
 
-  /* Pink - Secondary */
-  --color-secondary: #ec4899; /* Pink complementary to logo */
-  --color-secondary-dark: #be185d;
-  --color-secondary-light: #f472b6;
+  /* Soft Gold - Secondary */
+  --color-secondary: #d4a017;
+  --color-secondary-dark: #a16207;
+  --color-secondary-light: #facc15;
 
-  /* Amber - Accent */
-  --color-accent: #f59e0b; /* Warm accent */
-  --color-accent-dark: #d97706;
-  --color-accent-light: #fbbf24;
+  /* Sky Blue - Accent */
+  --color-accent: #0ea5e9;
+  --color-accent-dark: #0369a1;
+  --color-accent-light: #7dd3fc;
 
   /* Light Theme Backgrounds */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f9fafb;
-  --bg-tertiary: #f3f4f6;
+  --bg-primary: #faf9ff;
+  --bg-secondary: #f3f0ff;
+  --bg-tertiary: #e9e5ff;
 
   /* Light Theme Text */
-  --text-primary: #111827;
-  --text-secondary: #4b5563;
-  --text-tertiary: #6b7280;
+  --text-primary: #1e1b4b;
+  --text-secondary: #4c1d95;
+  --text-tertiary: #6a62a3;
 
   /* Light Theme Borders */
-  --border-color: #e5e7eb;
-  --border-dark: #d1d5db;
+  --border-color: #ddd6fe;
+  --border-dark: #c4b5fd;
 }
 
 @plugin "daisyui/theme" {
   name: "dark";
-  /* Dark Theme - Primary Colors */
-  --color-primary: #c084fc; /* Brighter purple for dark mode */
-  --color-primary-dark: #a855f7;
-  --color-primary-light: #d8b4fe;
+  /* Dark Theme - Core Colors */
+  --color-primary: #c4b5fd;
+  --color-primary-dark: #8b5cf6;
+  --color-primary-light: #ddd6fe;
 
-  /* Pink - Secondary (lighter for dark mode) */
-  --color-secondary: #f472b6; /* Brighter pink for dark mode */
-  --color-secondary-dark: #ec4899;
-  --color-secondary-light: #fbcfe8;
+  --color-secondary: #facc15;
+  --color-secondary-dark: #ca8a04;
+  --color-secondary-light: #fde047;
 
-  /* Amber - Accent (brighter for dark mode) */
-  --color-accent: #fbbf24; /* Lighter gold for dark mode */
-  --color-accent-dark: #f59e0b;
-  --color-accent-light: #fcd34d;
+  --color-accent: #38bdf8;
+  --color-accent-dark: #0284c7;
+  --color-accent-light: #7dd3fc;
 
   /* Dark Theme Backgrounds */
-  --bg-primary: #0f172a;
-  --bg-secondary: #1e293b;
-  --bg-tertiary: #334155;
+  --bg-primary: #0f0c29;
+  --bg-secondary: #1b1638;
+  --bg-tertiary: #241d4f;
 
   /* Dark Theme Text */
-  --text-primary: #f1f5f9;
-  --text-secondary: #cbd5e1;
-  --text-tertiary: #94a3b8;
+  --text-primary: #f5f3ff;
+  --text-secondary: #ddd6fe;
+  --text-tertiary: #b8afd9;
 
   /* Dark Theme Borders */
-  --border-color: #334155;
-  --border-dark: #475569;
+  --border-color: #312e81;
+  --border-dark: #4338ca;
 }
 
 /* Base Styles */
