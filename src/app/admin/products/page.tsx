@@ -7,11 +7,11 @@ import imgbbImageUpload from "@/lib/imgbbImageUpload";
 import { generateSKU } from "@/lib/generateSKU";
 import Skeleton from "react-loading-skeleton";
 import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaX } from "react-icons/fa6";
 
 type ProductItem = {
   _id: string;
   name: string;
-  slug: string;
   description: string;
   category: string;
   price: number;
@@ -25,11 +25,11 @@ type ProductItem = {
   isFeatured: boolean;
   isActive: boolean;
   createdAt: string;
+  about?: string;
 };
 
 type ProductFormState = {
   name: string;
-  slug: string;
   description: string;
   category: string;
   price: string;
@@ -38,6 +38,7 @@ type ProductFormState = {
   badge: string;
   sku: string;
   tags: string;
+  about?: string;
   isFeatured: boolean;
   isActive: boolean;
 };
@@ -46,7 +47,6 @@ const PAGE_SIZE = 9;
 
 const initialForm: ProductFormState = {
   name: "",
-  slug: "",
   description: "",
   category: "Frock",
   price: "",
@@ -55,6 +55,7 @@ const initialForm: ProductFormState = {
   badge: "",
   sku: "",
   tags: "",
+  about: "",
   isFeatured: false,
   isActive: true,
 };
@@ -279,7 +280,6 @@ export default function Page() {
 
       const body = {
         name: form.name,
-        slug: form.slug,
         description: form.description,
         category: form.category,
         price: Number(form.price),
@@ -298,8 +298,8 @@ export default function Page() {
           .filter(Boolean),
         isFeatured: form.isFeatured,
         isActive: form.isActive,
+        about: form.about,
       };
-
       const endpoint = selectedProduct
         ? `/api/admin/products/${selectedProduct._id}`
         : "/api/admin/products";
@@ -399,7 +399,6 @@ export default function Page() {
     setSubmitError(null);
     setForm({
       name: product.name,
-      slug: product.slug,
       description: product.description,
       category: product.category,
       price: String(product.price),
@@ -411,6 +410,7 @@ export default function Page() {
       tags: product.tags?.join(", ") || "",
       isFeatured: product.isFeatured,
       isActive: product.isActive,
+      about: product.about || "",
     });
     setCoverImageFile(null);
     setCoverPreview(product.image);
@@ -488,7 +488,7 @@ export default function Page() {
                   className="h-full w-full object-cover"
                 />
               </div>
-              <div className="space-y-3 p-4 h-full flex-1 border">
+              <div className="space-y-3 p-4 h-full flex-1 ">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="badge badge-outline">
                     {product.category}
@@ -579,13 +579,13 @@ export default function Page() {
                 className="btn btn-sm btn-ghost"
                 onClick={closeModal}
               >
-                ✕
+                <FaX />
               </button>
             </div>
 
             <form className="p-4 sm:p-5 space-y-4" onSubmit={handleAddProduct}>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                <label className="form-control w-full">
+                <label className="form-control w-full col-span-2">
                   <span className="label-text mb-1">Name *</span>
                   <input
                     required
@@ -593,17 +593,6 @@ export default function Page() {
                     value={form.name}
                     onChange={(event) =>
                       handleChange("name", event.currentTarget.value)
-                    }
-                  />
-                </label>
-
-                <label className="form-control w-full">
-                  <span className="label-text mb-1">Slug (optional)</span>
-                  <input
-                    className="input input-bordered w-full"
-                    value={form.slug}
-                    onChange={(event) =>
-                      handleChange("slug", event.currentTarget.value)
                     }
                   />
                 </label>
@@ -630,6 +619,9 @@ export default function Page() {
                     }
                   >
                     <option value="Frock">Frock</option>
+                    <option value="Nimas">Nimas</option>
+                    <option value="Blouses">Blouses</option>
+                    <option value="Others">Others</option>
                   </select>
                 </label>
 
@@ -793,6 +785,17 @@ export default function Page() {
                     </div>
                   </div>
                 ) : null}
+
+                <label className="form-control w-full sm:col-span-2">
+                  <span className="label-text mb-1">About</span>
+                  <textarea
+                    className="textarea textarea-bordered w-full"
+                    value={form.about}
+                    onChange={(event) =>
+                      handleChange("about", event.currentTarget.value)
+                    }
+                  />
+                </label>
 
                 <label className="form-control w-full sm:col-span-2">
                   <span className="label-text mb-1">

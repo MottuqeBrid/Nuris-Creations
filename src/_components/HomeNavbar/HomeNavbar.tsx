@@ -5,34 +5,31 @@ import ThemeToggle from "../ThemeToggle/ThemeToggle";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  AiOutlineHome,
-  AiOutlineShop,
-  AiOutlineInfoCircle,
-  AiOutlineMail,
-} from "react-icons/ai";
-import { BsCupHot } from "react-icons/bs";
-import { FaTshirt } from "react-icons/fa";
-import { FcManager } from "react-icons/fc";
-import { MdOutlinePhoneIphone } from "react-icons/md";
+  FaEnvelope,
+  FaFemale,
+  FaHome,
+  FaInfoCircle,
+  FaLayerGroup,
+  FaShoppingBag,
+  FaTshirt,
+  FaUserShield,
+} from "react-icons/fa";
 
 export default function HomeNavbar() {
   const pathname = usePathname();
 
   const mainLinks = [
-    { name: "Home", link: "/", icon: AiOutlineHome },
-    { name: "About", link: "/about", icon: AiOutlineInfoCircle },
-    { name: "Contact", link: "/contact", icon: AiOutlineMail },
-    { name: "Admin", link: "/admin", icon: FcManager },
+    { name: "Home", link: "/", icon: FaHome },
+    { name: "About", link: "/about", icon: FaInfoCircle },
+    { name: "Contact", link: "/contact", icon: FaEnvelope },
+    { name: "Admin", link: "/admin", icon: FaUserShield },
   ];
 
   const shopLinks = [
-    { name: "Custom Mugs", link: "/shop/mugs", icon: BsCupHot },
-    { name: "T-Shirts", link: "/shop/tshirts", icon: FaTshirt },
-    {
-      name: "Phone Cases",
-      link: "/shop/phone-cases",
-      icon: MdOutlinePhoneIphone,
-    },
+    { name: "Frocks", link: "/shop/frocks", icon: FaFemale },
+    { name: "Nimas", link: "/shop/nimas", icon: FaTshirt },
+    { name: "Blouses", link: "/shop/blouses", icon: FaShoppingBag },
+    { name: "Others", link: "/shop/others", icon: FaLayerGroup },
   ];
 
   const isActive = (path: string) => pathname === path;
@@ -71,14 +68,14 @@ export default function HomeNavbar() {
                       : "hover:text-primary"
                   }`}
                 >
-                  <AiOutlineHome className="w-4 h-4" />
+                  <FaHome className="w-4 h-4" />
                   Home
                 </Link>
               </li>
               <li>
                 <details>
                   <summary className="flex items-center gap-2 hover:text-primary">
-                    <AiOutlineShop className="w-4 h-4" />
+                    <FaShoppingBag className="w-4 h-4" />
                     Shop
                   </summary>
                   <ul className="p-2">
@@ -137,14 +134,14 @@ export default function HomeNavbar() {
                   isActive("/") ? "active font-semibold" : "hover:text-primary"
                 }`}
               >
-                <AiOutlineHome className="w-5 h-5" />
+                <FaHome className="w-5 h-5" />
                 Home
               </Link>
             </li>
             <li>
               <details>
                 <summary className="flex items-center gap-2 hover:text-primary">
-                  <AiOutlineShop className="w-5 h-5" />
+                  <FaShoppingBag className="w-5 h-5" />
                   Shop
                 </summary>
                 <ul className="p-2 bg-base-100/90 w-52 z-1 shadow-lg hover:bg-base-100 hover:shadow-lg border border-[(--border-color)] rounded-box">

@@ -2,17 +2,14 @@ import { connectDB } from "@/lib/connectDB";
 import { Product } from "@/Schema/Products.model";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(request: NextRequest) {
-  const searchParams = request.nextUrl.searchParams;
-  const category = searchParams.get("category");
-  await connectDB();
-  const query: { category?: string } = {};
-  if (category) {
-    query.category = category.trim();
-  }
-  console.log(query);
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+export async function GET(request: NextRequest, context: RouteContext) {
   try {
-    const products = await Product.find(query).sort({ createdAt: -1 }).lean();
+    await connectDB();
+    const { id } = await context.params;
+    const products = await Product.findById(id).lean();
     return NextResponse.json({ success: true, data: products });
   } catch (error) {
     console.error("GET /api/products failed", error);

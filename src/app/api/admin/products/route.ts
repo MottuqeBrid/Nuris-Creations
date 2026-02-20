@@ -2,14 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { Product } from "@/Schema/Products.model";
 import { connectDB } from "@/lib/connectDB";
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
 export async function GET(request: NextRequest) {
   try {
     await connectDB();
@@ -59,6 +51,7 @@ export async function POST(request: NextRequest) {
     const description = String(body.description || "").trim();
     const category = String(body.category || "").trim();
     const image = String(body.image || "").trim();
+    const about = String(body.about || "").trim();
     const price = Number(body.price);
     const stock = Number(body.stock);
 
@@ -94,7 +87,6 @@ export async function POST(request: NextRequest) {
 
     const product = await Product.create({
       name,
-      slug: slugify(String(body.slug || "").trim() || name),
       description,
       category,
       price,
@@ -118,22 +110,11 @@ export async function POST(request: NextRequest) {
             .map((tag: unknown) => String(tag).trim())
             .filter(Boolean)
         : [],
+      about: about || null,
     });
 
     return NextResponse.json({ data: product, success: true }, { status: 201 });
   } catch (error) {
-    const err = error as { code?: number };
-
-    if (err.code === 11000) {
-      return NextResponse.json(
-        {
-          message: "Duplicate value found for a unique field (slug or sku).",
-          success: false,
-        },
-        { status: 409 },
-      );
-    }
-
     console.error("POST /api/admin/products failed", error);
     return NextResponse.json(
       { message: "Failed to create product.", success: false },

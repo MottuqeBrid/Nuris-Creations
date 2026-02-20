@@ -3,14 +3,6 @@ import mongoose from "mongoose";
 import { Product } from "@/Schema/Products.model";
 import { connectDB } from "@/lib/connectDB";
 
-const slugify = (value: string) =>
-  value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .replace(/\s+/g, "-")
-    .replace(/-+/g, "-");
-
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
@@ -31,8 +23,8 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     const payload = {
       name: String(body.name || "").trim(),
-      slug: slugify(String(body.slug || "").trim() || String(body.name || "")),
       description: String(body.description || "").trim(),
+      about: String(body.about || "").trim() || null,
       category: String(body.category || "").trim(),
       price: Number(body.price),
       compareAtPrice:
@@ -106,17 +98,6 @@ export async function PUT(request: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
-    const err = error as { code?: number };
-    if (err.code === 11000) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Duplicate value found for a unique field (slug or sku).",
-        },
-        { status: 409 },
-      );
-    }
-
     console.error("PUT /api/admin/products/[id] failed", error);
     return NextResponse.json(
       { success: false, message: "Failed to update product." },

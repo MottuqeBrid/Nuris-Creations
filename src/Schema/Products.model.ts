@@ -9,14 +9,6 @@ const ProductSchema = new mongoose.Schema(
       minlength: 2,
       maxlength: 120,
     },
-    slug: {
-      type: String,
-      required: true,
-      unique: true,
-      lowercase: true,
-      trim: true,
-      match: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
-    },
     description: {
       type: String,
       required: true,
@@ -27,7 +19,7 @@ const ProductSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
-      enum: ["Frock"],
+      enum: ["Frock", "Nimas", "Blouses", "Others"],
     },
     price: {
       type: Number,
@@ -82,6 +74,10 @@ const ProductSchema = new mongoose.Schema(
     tags: {
       type: [String],
       default: [],
+    },
+    about: {
+      type: String,
+      trim: true,
     },
   },
   {
