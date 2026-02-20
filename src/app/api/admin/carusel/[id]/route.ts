@@ -3,16 +3,17 @@ import { connectDB } from "@/lib/connectDB";
 import { Carusel } from "@/Schema/Carusel.model";
 
 type Params = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
 
 export async function GET(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
 
-    const item = await Carusel.findById(params.id).lean();
+    const { id } = await params;
+    const item = await Carusel.findById(id).lean();
 
     if (!item) {
       return NextResponse.json(
@@ -34,6 +35,8 @@ export async function GET(request: NextRequest, { params }: Params) {
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
+
+    const { id } = await params;
 
     const body = await request.json();
     const updates: Record<string, string> = {};
@@ -58,7 +61,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       );
     }
 
-    const item = await Carusel.findByIdAndUpdate(params.id, updates, {
+    const item = await Carusel.findByIdAndUpdate(id, updates, {
       new: true,
     });
 
@@ -83,7 +86,8 @@ export async function DELETE(request: NextRequest, { params }: Params) {
   try {
     await connectDB();
 
-    const item = await Carusel.findByIdAndDelete(params.id);
+    const { id } = await params;
+    const item = await Carusel.findByIdAndDelete(id);
 
     if (!item) {
       return NextResponse.json(
